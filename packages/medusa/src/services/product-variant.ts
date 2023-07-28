@@ -211,8 +211,11 @@ class ProductVariantService extends TransactionBaseService {
         }
       })
 
+      // Look through all of the existing product variants and for each one check
       const variantExists = product.variants.find((v) => {
+        // that if all options of the existing variant
         return v.options.every((option) => {
+          // match option ids on the new variant, and the option values are also the same,
           const variantOption = variant.options.find(
             (o) => option.option_id === o.option_id
           )
@@ -220,7 +223,8 @@ class ProductVariantService extends TransactionBaseService {
           return option.value === variantOption?.value
         })
       })
-
+      
+      // reject the new variant with an error.
       if (variantExists) {
         throw new MedusaError(
           MedusaError.Types.DUPLICATE_ERROR,

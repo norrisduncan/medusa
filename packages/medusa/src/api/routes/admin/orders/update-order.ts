@@ -100,6 +100,38 @@ export default async (req, res) => {
   res.status(200).json({ order: cleanResponseData(order, []) })
 }
 
+class PaymentMethod {
+  @IsString()
+  @IsOptional()
+  provider_id?: string
+
+  @IsObject()
+  @IsOptional()
+  data?: Record<string, unknown>
+}
+
+class ShippingMethod {
+  @IsString()
+  @IsOptional()
+  provider_id?: string
+
+  @IsString()
+  @IsOptional()
+  profile_id?: string
+
+  @IsInt()
+  @IsOptional()
+  price?: number
+
+  @IsObject()
+  @IsOptional()
+  data?: Record<string, unknown>
+
+  @IsArray()
+  @IsOptional()
+  items?: Record<string, unknown>[]
+}
+
 /**
  * @schema AdminPostOrdersOrderReq
  * type: object
@@ -208,38 +240,6 @@ export class AdminPostOrdersOrderReq {
   @IsBoolean()
   @IsOptional()
   no_notification?: boolean
-}
-
-class PaymentMethod {
-  @IsString()
-  @IsOptional()
-  provider_id?: string
-
-  @IsObject()
-  @IsOptional()
-  data?: Record<string, unknown>
-}
-
-class ShippingMethod {
-  @IsString()
-  @IsOptional()
-  provider_id?: string
-
-  @IsString()
-  @IsOptional()
-  profile_id?: string
-
-  @IsInt()
-  @IsOptional()
-  price?: number
-
-  @IsObject()
-  @IsOptional()
-  data?: Record<string, unknown>
-
-  @IsArray()
-  @IsOptional()
-  items?: Record<string, unknown>[]
 }
 
 export class AdminPostOrdersOrderParams extends FindParams {}

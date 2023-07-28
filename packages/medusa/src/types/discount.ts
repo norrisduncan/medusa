@@ -22,6 +22,16 @@ export type QuerySelector = {
   q?: string
 }
 
+export class AdminGetDiscountsDiscountRuleParams {
+  @IsOptional()
+  @IsEnum(DiscountRuleType)
+  type?: DiscountRuleType
+
+  @IsOptional()
+  @IsEnum(AllocationType)
+  allocation?: AllocationType
+}
+
 export class FilterableDiscountProps {
   @IsString()
   @IsOptional()
@@ -41,16 +51,6 @@ export class FilterableDiscountProps {
   @IsOptional()
   @Type(() => AdminGetDiscountsDiscountRuleParams)
   rule?: AdminGetDiscountsDiscountRuleParams
-}
-
-export class AdminGetDiscountsDiscountRuleParams {
-  @IsOptional()
-  @IsEnum(DiscountRuleType)
-  type?: DiscountRuleType
-
-  @IsOptional()
-  @IsEnum(AllocationType)
-  allocation?: AllocationType
 }
 
 export class AdminUpsertConditionsReq {

@@ -295,6 +295,16 @@ type ReturnObj = {
   location_id?: string
 }
 
+class ReturnShipping {
+  @IsString()
+  @IsOptional()
+  option_id?: string
+
+  @IsInt()
+  @IsOptional()
+  price?: number
+}
+
 /**
  * @schema AdminPostOrdersOrderReturnsReq
  * type: object
@@ -378,14 +388,6 @@ export class AdminPostOrdersOrderReturnsReq {
   location_id?: string
 }
 
-class ReturnShipping {
-  @IsString()
-  @IsOptional()
-  option_id?: string
 
-  @IsInt()
-  @IsOptional()
-  price?: number
-}
 
 export class AdminPostOrdersOrderReturnsParams extends FindParams {}

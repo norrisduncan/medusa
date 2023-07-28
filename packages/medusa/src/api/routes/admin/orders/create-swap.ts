@@ -259,6 +259,55 @@ export default async (req, res) => {
   res.status(idempotencyKey.response_code).json(idempotencyKey.response_body)
 }
 
+class ReturnItem {
+  @IsString()
+  @IsNotEmpty()
+  item_id: string
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  quantity: number
+
+  @IsOptional()
+  @IsString()
+  reason_id?: string
+
+  @IsOptional()
+  @IsString()
+  note?: string
+}
+
+class ReturnShipping {
+  @IsString()
+  @IsNotEmpty()
+  option_id: string
+
+  @IsInt()
+  @IsOptional()
+  price?: number
+}
+
+class CustomShippingOption {
+  @IsString()
+  @IsNotEmpty()
+  option_id: string
+
+  @IsInt()
+  @IsNotEmpty()
+  price: number
+}
+
+class AdditionalItem {
+  @IsString()
+  @IsNotEmpty()
+  variant_id: string
+
+  @IsNumber()
+  @IsNotEmpty()
+  quantity: number
+}
+
 /**
  * @schema AdminPostOrdersOrderSwapsReq
  * type: object
@@ -372,55 +421,6 @@ export class AdminPostOrdersOrderSwapsReq {
   @IsBoolean()
   @IsOptional()
   allow_backorder?: boolean = true
-}
-
-class ReturnItem {
-  @IsString()
-  @IsNotEmpty()
-  item_id: string
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  quantity: number
-
-  @IsOptional()
-  @IsString()
-  reason_id?: string
-
-  @IsOptional()
-  @IsString()
-  note?: string
-}
-
-class ReturnShipping {
-  @IsString()
-  @IsNotEmpty()
-  option_id: string
-
-  @IsInt()
-  @IsOptional()
-  price?: number
-}
-
-class CustomShippingOption {
-  @IsString()
-  @IsNotEmpty()
-  option_id: string
-
-  @IsInt()
-  @IsNotEmpty()
-  price: number
-}
-
-class AdditionalItem {
-  @IsString()
-  @IsNotEmpty()
-  variant_id: string
-
-  @IsNumber()
-  @IsNotEmpty()
-  quantity: number
 }
 
 export class AdminPostOrdersOrderSwapsParams extends FindParams {}

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es5", "es6", "es2019"],
-    "target": "es5",
+    "target": "es2022",
     "outDir": "./dist",
     "esModuleInterop": true,
     "declaration": true,
@@ -17,7 +17,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "downlevelIteration": true, // to use ES5 specific tooling
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "useDefineForClassFields": false
   },
   "include": ["./src/**/*", "index.d.ts"],
   "exclude": [

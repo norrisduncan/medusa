@@ -107,6 +107,42 @@ export default async (req: Request, res: Response) => {
   res.status(200).json({ discount })
 }
 
+export class AdminUpsertCondition extends AdminUpsertConditionsReq {
+  @IsString()
+  @IsOptional()
+  id?: string
+
+  @IsString()
+  @IsOptional()
+  operator: DiscountConditionOperator
+}
+
+export class AdminUpdateDiscountRule {
+  @IsString()
+  @IsNotEmpty()
+  id: string
+
+  @IsString()
+  @IsOptional()
+  description?: string
+
+  @IsNumber()
+  @IsOptional()
+  value?: number
+
+  @IsOptional()
+  @IsEnum(AllocationType, {
+    message: `Invalid allocation type, must be one of "total" or "item"`,
+  })
+  allocation?: AllocationType
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AdminUpsertCondition)
+  conditions?: AdminUpsertCondition[]
+}
+
 /**
  * @schema AdminPostDiscountsDiscountReq
  * type: object
@@ -242,42 +278,6 @@ export class AdminPostDiscountsDiscountReq {
   @IsObject()
   @IsOptional()
   metadata?: Record<string, unknown>
-}
-
-export class AdminUpdateDiscountRule {
-  @IsString()
-  @IsNotEmpty()
-  id: string
-
-  @IsString()
-  @IsOptional()
-  description?: string
-
-  @IsNumber()
-  @IsOptional()
-  value?: number
-
-  @IsOptional()
-  @IsEnum(AllocationType, {
-    message: `Invalid allocation type, must be one of "total" or "item"`,
-  })
-  allocation?: AllocationType
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => AdminUpsertCondition)
-  conditions?: AdminUpsertCondition[]
-}
-
-export class AdminUpsertCondition extends AdminUpsertConditionsReq {
-  @IsString()
-  @IsOptional()
-  id?: string
-
-  @IsString()
-  @IsOptional()
-  operator: DiscountConditionOperator
 }
 
 export class AdminPostDiscountsDiscountParams extends FindParams {}

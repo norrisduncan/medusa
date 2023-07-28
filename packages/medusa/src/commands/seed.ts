@@ -134,78 +134,87 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
 
     const store = await storeService.retrieve()
 
-    for (const u of users) {
-      const pass = u.password
-      if (pass) {
-        delete u.password
+    if (users && users.length) {
+      for (const u of users) {
+        const pass = u.password
+        if (pass) {
+          delete u.password
+        }
+        await userService.withTransaction(tx).create(u, pass)
       }
-      await userService.withTransaction(tx).create(u, pass)
     }
 
     const regionIds = {}
-    for (const r of regions) {
-      let dummyId
-      if (!r.id || !r.id.startsWith("reg_")) {
-        dummyId = r.id
-        delete r.id
-      }
 
-      const reg = await regionService.withTransaction(tx).create(r)
+    if (regions && regions.length) {
+      for (const r of regions) {
+        let dummyId
+        if (!r.id || !r.id.startsWith("reg_")) {
+          dummyId = r.id
+          delete r.id
+        }
 
-      if (dummyId) {
-        regionIds[dummyId] = reg.id
+        const reg = await regionService.withTransaction(tx).create(r)
+
+        if (dummyId) {
+          regionIds[dummyId] = reg.id
+        }
       }
     }
 
-    for (const so of shipping_options) {
-      if (regionIds[so.region_id]) {
-        so.region_id = regionIds[so.region_id]
-      }
+    if (shipping_options && shipping_options.length) {
+      for (const so of shipping_options) {
+        if (regionIds[so.region_id]) {
+          so.region_id = regionIds[so.region_id]
+        }
 
-      so.profile_id = defaultProfile!.id
-      if (so.is_giftcard) {
-        so.profile_id = gcProfile!.id
-        delete so.is_giftcard
-      }
+        so.profile_id = defaultProfile!.id
+        if (so.is_giftcard) {
+          so.profile_id = gcProfile!.id
+          delete so.is_giftcard
+        }
 
-      await shippingOptionService.withTransaction(tx).create(so)
+        await shippingOptionService.withTransaction(tx).create(so)
+      }
     }
 
-    for (const p of products) {
-      const variants = p.variants
-      delete p.variants
+    if (products && products.length) {
+      for (const p of products) {
+        const variants = p.variants
+        delete p.variants
 
-      // default to the products being visible
-      p.status = p.status || "published"
+        // default to the products being visible
+        p.status = p.status || "published"
 
-      p.sales_channels = [{ id: store.default_sales_channel_id }]
+        p.sales_channels = [{ id: store.default_sales_channel_id }]
 
-      p.profile_id = defaultProfile!.id
-      if (p.is_giftcard) {
-        p.profile_id = gcProfile!.id
-      }
+        p.profile_id = defaultProfile!.id
+        if (p.is_giftcard) {
+          p.profile_id = gcProfile!.id
+        }
 
-      const newProd = await productService
-        .withTransaction(tx)
-        .create(p as CreateProductInput)
+        const newProd = await productService
+          .withTransaction(tx)
+          .create(p as CreateProductInput)
 
-      if (variants && variants.length) {
-        const optionIds = p.options.map(
-          (o) => newProd.options.find((newO) => newO.title === o.title)?.id
-        )
+        if (variants && variants.length) {
+          const optionIds = p.options.map(
+            (o) => newProd.options.find((newO) => newO.title === o.title)?.id
+          )
 
-        for (const v of variants) {
-          const variant = {
-            ...v,
-            options: v.options.map((o, index) => ({
-              ...o,
-              option_id: optionIds[index],
-            })),
+          for (const v of variants) {
+            const variant = {
+              ...v,
+              options: v.options.map((o, index) => ({
+                ...o,
+                option_id: optionIds[index],
+              })),
+            }
+
+            await productVariantService
+              .withTransaction(tx)
+              .create(newProd.id, variant)
           }
-
-          await productVariantService
-            .withTransaction(tx)
-            .create(newProd.id, variant)
         }
       }
     }
@@ -233,7 +242,7 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
       }
     }
 
-    if (dbType !== "sqlite") {
+    if (dbType !== "sqlite" && categories && categories.length) {
       for (const c of categories) {
         await createProductCategory(c, null)
       }

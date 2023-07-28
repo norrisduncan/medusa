@@ -123,6 +123,36 @@ export default async (req: Request, res: Response) => {
   res.status(200).json({ discount })
 }
 
+export class AdminCreateCondition extends AdminUpsertConditionsReq {
+  @IsString()
+  operator: DiscountConditionOperator
+}
+
+export class AdminPostDiscountsDiscountRule {
+  @IsString()
+  @IsOptional()
+  description?: string
+
+  @IsEnum(DiscountRuleType, {
+    message: `Invalid rule type, must be one of "fixed", "percentage" or "free_shipping"`,
+  })
+  type: DiscountRuleType
+
+  @IsNumber()
+  value: number
+
+  @IsEnum(AllocationType, {
+    message: `Invalid allocation type, must be one of "total" or "item"`,
+  })
+  allocation: AllocationType
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AdminCreateCondition)
+  conditions?: AdminCreateCondition[]
+}
+
 /**
  * @schema AdminPostDiscountsReq
  * type: object
@@ -272,34 +302,6 @@ export class AdminPostDiscountsReq {
   metadata?: Record<string, unknown>
 }
 
-export class AdminPostDiscountsDiscountRule {
-  @IsString()
-  @IsOptional()
-  description?: string
 
-  @IsEnum(DiscountRuleType, {
-    message: `Invalid rule type, must be one of "fixed", "percentage" or "free_shipping"`,
-  })
-  type: DiscountRuleType
-
-  @IsNumber()
-  value: number
-
-  @IsEnum(AllocationType, {
-    message: `Invalid allocation type, must be one of "total" or "item"`,
-  })
-  allocation: AllocationType
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => AdminCreateCondition)
-  conditions?: AdminCreateCondition[]
-}
-
-export class AdminCreateCondition extends AdminUpsertConditionsReq {
-  @IsString()
-  operator: DiscountConditionOperator
-}
 
 export class AdminPostDiscountsParams extends FindParams {}
